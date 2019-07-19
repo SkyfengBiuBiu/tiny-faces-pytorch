@@ -106,7 +106,7 @@ class WIDERFace(dataset.Dataset):
 
                 self.data.append(datum)
 
-        elif self.split == "test":
+        elif self.split == "test" or "demo":
             data = open(path).readlines()
             self.data = [{'img_path': x.strip()} for x in data]
 
@@ -216,7 +216,7 @@ class WIDERFace(dataset.Dataset):
 
             return img, datum['img_path']
 
-        elif self.split == 'test':
+        elif self.split == 'test' or "demo":
             filename = datum['img_path']
 
             if self.transforms is not None:

@@ -25,7 +25,7 @@ def arguments():
     parser.add_argument("--dataset-root")
     parser.add_argument("--checkpoint",
                         help="The path to the model checkpoint", default="")
-    parser.add_argument("--prob_thresh", type=float, default=0.03)
+    parser.add_argument("--prob_thresh", type=float, default=0.01)
     parser.add_argument("--nms_thresh", type=float, default=0.3)
     parser.add_argument("--workers", default=8, type=int)
     parser.add_argument("--batch_size", default=1, type=int)
@@ -84,6 +84,19 @@ def run(model, val_loader, templates, prob_thresh, nms_thresh, device, split, de
         dets = trainer.get_detections(model, img, templates, val_loader.dataset.rf,
                                       val_loader.dataset.transforms, prob_thresh,
                                       nms_thresh, device=device)
+        print("dets",dets.shape)
+        if debug:
+            print(img.shape)
+            mean = torch.as_tensor([0.485, 0.456, 0.406], dtype=torch.float32, device=img.device)
+            std = torch.as_tensor([0.229, 0.224, 0.225], dtype=torch.float32, device=img.device)
+            
+            img=(img[0]).permute((1, 2, 0))
+            print(img.shape)
+            img=std*img+mean
+            img=np.clip(img.numpy(),0,1)
+            im = Image.fromarray((img*255).astype('uint8'), 'RGB')
+            visualize.visualize_bboxes(im, dets)
+
 
         write_results(dets, filename[0], split)
     return dets

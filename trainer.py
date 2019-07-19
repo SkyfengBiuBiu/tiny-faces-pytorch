@@ -65,6 +65,8 @@ def train(model, loss_fn, optimizer, dataloader, epoch, device):
         x = img.float().to(device)
 
         class_map_var = class_map.float().to(device)
+        print("class_map_var",class_map_var.shape)
+        print("class_map_var",class_map_var)
         regression_map_var = regression_map.float().to(device)
 
         output = model(x)
@@ -120,7 +122,13 @@ def get_detections(model, img, templates, rf, img_transforms,
         # first `num_templates` channels are class maps
         score_cls = output[:, :num_templates, :, :]
         prob_cls = torch.sigmoid(score_cls)
-
+        
+        min_score_cls=torch.min(score_cls.view(-1,1))
+        max_score_cls=torch.max(score_cls.view(-1,1))
+        abs_score_cls=max_score_cls-min_score_cls
+        score_cls=(score_cls+torch.abs(min_score_cls))/abs_score_cls
+#        print(score_cls)
+        
         score_cls = score_cls.data.cpu().numpy().transpose((0, 2, 3, 1))
         prob_cls = prob_cls.data.cpu().numpy().transpose((0, 2, 3, 1))
 

@@ -9,7 +9,7 @@ class DetectionModel(nn.Module):
     Hybrid Model from Tiny Faces paper
     """
 
-    def __init__(self, base_model=resnet101, num_templates=1, num_objects=1):
+    def __init__(self, base_model=resnet50, num_templates=1, num_objects=1):
         super().__init__()
         # 4 is for the bounding box offsets
         output = (num_objects + 4)*num_templates
@@ -100,5 +100,7 @@ class DetectionModel(nn.Module):
             score4 = score4[:, :, 0:score_res3.size(2), 0:score_res3.size(3)]
 
         score = score_res3 + score4
+#        print("score_res3",score_res3.size())
+#        print("score4",score4.size())
 
         return score

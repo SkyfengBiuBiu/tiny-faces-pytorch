@@ -33,7 +33,11 @@ def get_bboxes(score_cls, score_reg, prob_cls, templates, prob_thresh, rf, scale
                                           one_scale_template_ids[invalid_one_scale_idx]))
 
     # zero out prediction from templates that are invalid on this scale
-    prob_cls[:, :, invalid_template_id] = 0.0
+    for invalid in invalid_template_id:
+        if invalid >=score_cls.shape[2]:
+            pass
+        else:
+            score_cls[:, :, invalid] = 0.0
 
     indices = np.where(prob_cls > prob_thresh)
     fb, fy, fx, fc = indices
